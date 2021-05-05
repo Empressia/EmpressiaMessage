@@ -1,0 +1,61 @@
+plugins {
+	id "java";
+	id "application";
+	id "jp.empressia.gradle.plugin.message" version "1.1.2";
+}
+
+ext.moduleName = "jp.empressia.message.sample";
+ext.junitVersion = "5.7.0";
+ext.hamcrestVersion = "2.2";
+archivesBaseName = moduleName;
+
+repositories {
+	mavenCentral();
+}
+
+dependencies {
+	implementation(group:"jp.empressia", name:"jp.empressia.message", version:"1.1.0");
+	compileOnly(group:"jakarta.annotation", name:"jakarta.annotation-api", version:"2.0.0");
+
+	implementation(group:"jakarta.validation", name:"jakarta.validation-api", version:"3.0.0");
+	runtimeOnly(group:"org.hibernate", name:"hibernate-validator", version:"7.0.1.Final");
+	runtimeOnly(group:"org.glassfish", name:"jakarta.el", version:"4.0.1");
+
+	// use JUnit test framework.
+	testImplementation(group:"org.junit.jupiter", name:"junit-jupiter-api", version:junitVersion);
+	testRuntimeOnly(group:"org.junit.jupiter", name:"junit-jupiter-engine", version:junitVersion);
+	testImplementation(group:"org.hamcrest", name:"hamcrest", version:hamcrestVersion);
+}
+
+task generateValidationMessages(type: jp.empressia.gradle.plugin.message.task.EmpressiaMessageTaskSupport) {
+	extension {
+		messagePropertyFilePaths = files("src/main/resources/ValidationMessages.properties");
+		messageClassName = "ValidationMessage";
+		exceptionClassName = "ValidationMessageException";
+		adaptorClassName = "ValidationMessages";
+		createMessageIDConstants = true;
+	}
+}
+tasks.compileJava.dependsOn(tasks.generateValidationMessages);
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8";
+	options.release = 11;
+	options.compilerArgs << "-parameters";
+}
+
+java {
+	withJavadocJar();
+	withSourcesJar();
+}
+
+javadoc {
+	options.charSet "UTF-8";
+	options.encoding "UTF-8";
+	options.addBooleanOption("html5", true);
+	options.addStringOption("Xdoclint:none", "-quiet");
+}
+
+test {
+	useJUnitPlatform();
+}

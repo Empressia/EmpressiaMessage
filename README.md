@@ -46,7 +46,9 @@ Gralde用プラグインでメッセージ用のクラスを生成して、
 	`build.gradle`
 	```groovy
 	dependency {
-		implementation(group:"jp.empressia", name="jp.empressia.gradle.plugin.message", version:"1.0.0");
+		implementation(group:"jp.empressia", name="jp.empressia.gradle.plugin.message", version:"1.1.0");
+		// Generatedアノテーションを使用する場合は以下も必要になります。
+		compileOnly(group:"jakarta.annotation", name:"jakarta.annotation-api", version:"2.0.0");
 	}
 	```
 
@@ -66,7 +68,7 @@ Gralde用プラグインでメッセージ用のクラスを生成して、
 	```
 
 	配置場所の詳細については、以下を参照してください。  
-	* [Empressia Message Library#メッセージプロパティの配置場所](https://github.com/Empressia/EmpressiaMessageLibrary#メッセージプロパティの配置場所)
+	* [Empressia Message Generator#メッセージプロパティの配置場所](https://github.com/Empressia/EmpressiaMessageGenerator#メッセージプロパティの配置場所)
 
 1. Gradleにプラグインを適用をします。
 
@@ -74,7 +76,7 @@ Gralde用プラグインでメッセージ用のクラスを生成して、
 	```groovy
 	plugin {
 		id "java";
-		id "jp.empressia.gradle.plugin.message", version "1.0.0";
+		id "jp.empressia.gradle.plugin.message", version "1.1.2";
 	}
 	```
 
@@ -129,7 +131,8 @@ Gralde用プラグインでメッセージ用のクラスを生成して、
 クラスの生成の時に、設定を変更することで、文字列表現としての定数を用意することもできます。  
 アノテーションの引数などは、文字列定数でないと指定できないので、必要な場合は検討してみてください。  
 ```java
-	@NotNull(message=Message.ID.Constants.TEST0000)
+	@NotNull(message="{" + ValidationMessage.ID.Constants.NOT_NULL + "}")
+	public String ID;
 ```
 
 ## ライセンス
